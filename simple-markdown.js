@@ -87,29 +87,33 @@ function makeHorizontalRule(element) {
 }
 
 function makeLink(element) {
-	var selection = getInputSelection(element);
+	var selection = getInputSelection(element), result, title, url;
 
 	if(selection) {
 		selectedText = element.value.substring(selection.start, selection.end);
 
-		textMask = window.prompt("'Link mask' (the text that will be used as an hyperlink):", selectedText);
-		if(textMask !== null) {
-			url = window.prompt("Hyperlink url:", "http://");
-			if(url !== null) {
+		textMask = window.prompt("'Link mask' (the text that will be used as an hyperlink, leave empty if you don't need it):", selectedText);
+
+		url = window.prompt("Hyperlink url:", "http://");
+
+		if(url !== null) {
+			if(textMask !== null) {
 				title = window.prompt("Link title (optional, just press 'Cancel' if you don't want any):", '');
 
 				result = '[' + textMask + ']' + '(' + url;
-				if(title !== null) {
+				if(title !== null && title !== '') {
 					result += ' "' + title + '"';
 				}
 				result += ')'
-
-				replaceSelectedText({
-					element: element,
-					select: selection,
-					replacement: result
-				});
+			} else {
+				result = '<' + url + '>';
 			}
+
+			replaceSelectedText({
+				element: element,
+				select: selection,
+				replacement: result
+			});
 		}
 	}
 }
