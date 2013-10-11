@@ -13,7 +13,7 @@ You can find more about it on the link to the documentation above, or if you're 
 
 ## Usage
 
-In order to use simple-markdown.js, just include `simple-markdown-complete.js` in your page, and call `createMDEditor(options);`, where  `options` is a javascript object that may contain the following attributes:
+In order to use simple-markdown.js, just include `simple-markdown-complete.min.js` in your page, and call `createMDEditor(options);`, where  `options` is a javascript object that may contain the following attributes:
 
 - **parent_id** (**Mandatory**): id of the parent component where the editor is going to be placed in;
 - **input_name**: "name" attribute of the textarea that's created inside the editor. Defaults to "text";
@@ -26,7 +26,7 @@ In order to use simple-markdown.js, just include `simple-markdown-complete.js` i
 
 ## The repository
 
-This repository contains four javascript files, of which only one is needed if you just want to use the editor:
+This repository contains three javascript files, of which only one is needed if you just want to use the editor:
 
 - `selection.js`: A small javascript file containing basic input selection functionality. simple-markdown currently uses it, therefore, any browser which does not support the use of the `selectionStart` and `selectionEnd` will **NOT** make any use of simple-markdown;
 - `simple-markdown.js`: This file contains the functions concerning the editor only. It won't work on its own, as it uses functions declared in the `selection.js` file;
