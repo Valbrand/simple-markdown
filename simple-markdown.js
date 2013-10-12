@@ -151,8 +151,14 @@ function makeImage(element) {
 }
 
 function createMDEditor(options) {
+	if(typeof options === 'undefined') {
+		options = {}
+	}
 	if(typeof options.input_name === 'undefined') {
 		options.input_name = 'text';
+	}
+	if(typeof options.default_style === 'undefined') {
+		options.default_style = true;
 	}
 
 	var clickFunctions = {
@@ -221,16 +227,28 @@ function createMDEditor(options) {
 		}
 	}
 
-	var container = document.getElementById(options.parent_id),
+	var container, btn,
 		btns = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'quote', 'hr', 'bold', 'italic', 'link', 'img', 'help'],
 		div = document.createElement('div'),
 		aux = document.createElement('div'), 
-		textarea = document.createElement('textarea'), btn;
+		textarea = document.createElement('textarea');
+
+	if(typeof options.parent_id !== 'undefined') {
+		container = document.getElementById(options.parent_id);
+		container.appendChild(div);
+	} else if('currentScript' in document) {
+		var script_tag = document.currentScript;
+		script_tag.parentNode.insertBefore(div, script_tag);
+	} else {
+		console.log("(Simple-markdown.js) Error: 'parent_id' argument was not specified, and your browser does not support the use of the 'currentScript' property");
+		return;
+	}
 
 	aux.className = 'md-editor-buttons';
 	for (var i = 0; i < btns.length; i++) {
 		btn = document.createElement('button');
 		btn.setAttribute('type', 'button');
+		btn.setAttribute('data-md-function', btns[i]);
 		btn.className = 'md-editor-button';
 		btn.innerHTML = btns[i];
 		aux.appendChild(btn);
@@ -239,12 +257,15 @@ function createMDEditor(options) {
 	};
 
 	div.className = 'md-editor';
+	if(typeof options.editor_id !== 'undefined') {
+		div.id = options.editor_id;
+	}
 	div.appendChild(aux);
 	textarea.setAttribute('name', options.input_name);
 	textarea.className = 'md-editor-textarea';
 	div.appendChild(textarea);
 
-	if(typeof options.default_style === 'undefined' || options.default_style) {
+	if(options.default_style) {
 		div.style.display = "table";
 		div.style.padding = "10px";
 		div.style.backgroundColor = "#ccc";
@@ -258,6 +279,4 @@ function createMDEditor(options) {
 			textarea.style.MozBoxSizing = 'border-box';
 		}
 	}
-
-	container.appendChild(div);
 }
