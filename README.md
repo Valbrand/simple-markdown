@@ -26,6 +26,10 @@ In order to use *simple-markdown*, just include `simple-markdown-complete.min.js
 
 **P.S.:** If you just want to use all of the default arguments, you do not even need to pass the empty object to the `createMDEditor` function.
 
+## Browser compatibility
+
+I'm no compatibility guru, but I'm pretty sure *simple-markdown* works with IE >= 8, as well as with Firefox, Chrome, Opera and Safari. I'm going to check it out ASAP. The only real compatibility issue here is when you do not provide the `parent_id` argument to the `createMDEditor` function, as *simple-markdown* will try to use `document.currentScript` in such situations, which is not a feature that's implemented in all browsers. 
+
 ## The repository
 
 This repository contains three javascript files, of which only one is needed if you just want to use the editor:

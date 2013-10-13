@@ -14,32 +14,22 @@ function emphasizeSelection(element) {
 	});
 }
 
-function makeTitle(element, titleLevel) {
+function makeTitle(element, headerString) {
 	var selection = getInputSelection(element);
 
 	if(selection) {
 		if(selection.start == selection.end) {
-			prependLineWith(element, generateHeaderString(titleLevel), selection);
+			prependLineWith(element, headerString, selection);
 		} else {
-			makeTitleFromSelection(element, titleLevel, selection);
+			makeTitleFromSelection(element, headerString, selection);
 		}
 	}
 }
 
-function generateHeaderString(titleLevel) {
-	var header = ' ';
-
-	for (var i = 0; i < titleLevel; i++) {
-		header = '#' + header;
-	};
-
-	return header;
-}
-
-function makeTitleFromSelection(element, titleLevel, selection) {
+function makeTitleFromSelection(element, headerstring, selection) {
 	surroundSelectionWith({
 		element: element,
-		prefix: '\n'+generateHeaderString(titleLevel),
+		prefix: '\n'+headerString,
 		select: selection,
 		suffix: '\n',
 		removeLineBreaks: true
@@ -161,72 +151,6 @@ function createMDEditor(options) {
 		options.default_style = true;
 	}
 
-	var clickFunctions = {
-		'bold' : function(txtarea) {
-			return function() {
-				strengthenSelection(txtarea);
-			};
-		},
-		'italic' : function(txtarea) {
-			return function() {
-				emphasizeSelection(txtarea);
-			};
-		},
-		'h1' : function(txtarea) {
-			return function() {
-				makeTitle(txtarea, 1);
-			};
-		},
-		'h2' : function(txtarea) {
-			return function() {
-				makeTitle(txtarea, 2);
-			};
-		},
-		'h3' : function(txtarea) {
-			return function() {
-				makeTitle(txtarea, 3);
-			};
-		},
-		'h4' : function(txtarea) {
-			return function() {
-				makeTitle(txtarea, 4);
-			};
-		},
-		'h5' : function(txtarea) {
-			return function() {
-				makeTitle(txtarea, 5);
-			};
-		},
-		'h6' : function(txtarea) {
-			return function() {
-				makeTitle(txtarea, 6);
-			};
-		},
-		'quote' : function(txtarea) {
-			return function() {
-				makeQuoteBlock(txtarea);
-			};
-		},
-		'help' : function() {
-			return showHelpText;
-		},
-		'hr' : function(txtarea) {
-			return function() {
-				makeHorizontalRule(txtarea);
-			}
-		},
-		'link' : function(txtarea) {
-			return function() {
-				makeLink(txtarea);
-			}
-		},
-		'img' : function(txtarea) {
-			return function() {
-				makeImage(txtarea);
-			}
-		}
-	}
-
 	var container, btn,
 		btns = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'quote', 'hr', 'bold', 'italic', 'link', 'img', 'help'],
 		div = document.createElement('div'),
@@ -252,8 +176,6 @@ function createMDEditor(options) {
 		btn.className = 'md-editor-button';
 		btn.innerHTML = btns[i];
 		aux.appendChild(btn);
-
-		btn.onclick = clickFunctions[btns[i]](textarea);
 	};
 
 	div.className = 'md-editor';
@@ -264,6 +186,12 @@ function createMDEditor(options) {
 	textarea.setAttribute('name', options.input_name);
 	textarea.className = 'md-editor-textarea';
 	div.appendChild(textarea);
+
+	if(window.attachEvent !== undefined) {
+		window.attachEvent('onload', SMDSetupButtons);
+	} else if(window.addEventListener !== undefined) {
+		window.addEventListener('load', SMDSetupButtons, false);
+	}
 
 	if(options.default_style) {
 		div.style.display = "table";
@@ -279,4 +207,89 @@ function createMDEditor(options) {
 			textarea.style.MozBoxSizing = 'border-box';
 		}
 	}
+}
+
+function SMDSetupSingleButton(button, listener) {
+	if(button.attachEvent !== undefined) {
+		button.attachEvent('onclick', listener);
+	} else if(button.addEventListener !== undefined) {
+		button.addEventListener('click', listener, false);
+	}
+}
+
+function SMDSetupButtons() {
+	var textarea, listener,
+		clickFunctions = {
+			'bold' : function(txtarea) {
+				return function() {
+					strengthenSelection(txtarea);
+				};
+			},
+			'italic' : function(txtarea) {
+				return function() {
+					emphasizeSelection(txtarea);
+				};
+			},
+			'h1' : function(txtarea) {
+				return function() {
+					makeTitle(txtarea, '# ');
+				};
+			},
+			'h2' : function(txtarea) {
+				return function() {
+					makeTitle(txtarea, '## ');
+				};
+			},
+			'h3' : function(txtarea) {
+				return function() {
+					makeTitle(txtarea, '### ');
+				};
+			},
+			'h4' : function(txtarea) {
+				return function() {
+					makeTitle(txtarea, '#### ');
+				};
+			},
+			'h5' : function(txtarea) {
+				return function() {
+					makeTitle(txtarea, '##### ');
+				};
+			},
+			'h6' : function(txtarea) {
+				return function() {
+					makeTitle(txtarea, '###### ');
+				};
+			},
+			'quote' : function(txtarea) {
+				return function() {
+					makeQuoteBlock(txtarea);
+				};
+			},
+			'help' : function() {
+				return showHelpText;
+			},
+			'hr' : function(txtarea) {
+				return function() {
+					makeHorizontalRule(txtarea);
+				}
+			},
+			'link' : function(txtarea) {
+				return function() {
+					makeLink(txtarea);
+				}
+			},
+			'img' : function(txtarea) {
+				return function() {
+					makeImage(txtarea);
+				}
+			}
+		}, 
+		buttons = document.querySelectorAll('.md-editor-button');
+
+	for (var i = 0; i < buttons.length; i++) {
+		listener = clickFunctions[buttons[i].getAttribute('data-md-function')];
+		textarea = buttons[i].parentNode.parentNode.getElementsByTagName('textarea')[0];
+
+		SMDSetupSingleButton(buttons[i], listener(textarea));
+	};
 }
